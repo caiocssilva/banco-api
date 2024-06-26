@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Payment } from '../payment/payment.entity';
+import { IsIn } from 'class-validator';
 
 @Entity()
 export class Account {
@@ -9,8 +11,12 @@ export class Account {
     nome: string;
 
     @Column()
-    tipoConta: string; // 'corrente', 'poupança'
+    @IsIn(['corrente', 'poupança'], { message: 'Tipo de conta deve ser "corrente" ou "poupança"' })
+    tipoConta: string;
 
     @Column('decimal', { precision: 10, scale: 2 })
     saldoInicial: number;
+
+    @OneToMany(() => Payment, payment => payment.account)
+    payments: Payment[];
 }

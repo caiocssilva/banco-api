@@ -9,7 +9,8 @@ export class UploadController {
     @Post()
     @UseInterceptors(FileInterceptor('file'))
     async uploadFile(@UploadedFile() file) {
-        const fileUrl = await this.uploadService.uploadFile(file);
+        const key = `uploads/${Date.now()}_${file.originalname}`;
+        const fileUrl = await this.uploadService.uploadFile(file, key);
         return { url: fileUrl };
     }
 }

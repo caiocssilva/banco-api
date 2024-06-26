@@ -6,7 +6,7 @@ export class Payment {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Account)
+    @ManyToOne(() => Account, account => account.payments)
     account: Account;
 
     @Column('decimal', { precision: 10, scale: 2 })

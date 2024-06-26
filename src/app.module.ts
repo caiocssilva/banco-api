@@ -8,6 +8,8 @@ import { UploadModule } from './upload/upload.module';
 import { User } from './users/user.entity';
 import { Account } from './account/account.entity';
 import { Payment } from './payment/payment.entity';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -27,5 +29,7 @@ import { Payment } from './payment/payment.entity';
     PaymentModule,
     UploadModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule { }

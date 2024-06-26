@@ -2,14 +2,27 @@ import { Controller, Get, Post, Body, Param, UploadedFile, UseInterceptors, Quer
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PaymentService } from './payment.service';
 import { Payment } from './payment.entity';
+import { AccountService } from '../account/account.service';
+import { PaymentDTO } from './payment.dto'; 
+import { S3Service } from '../s3/s3.service';
 
-@Controller('payments')
+@Controller('payment')
 export class PaymentController {
-    constructor(private readonly paymentService: PaymentService) { }
+    constructor(
+        private readonly paymentService: PaymentService,
+        private readonly accountService: AccountService,
+        private readonly s3Service: S3Service,
+    ) {}
 
     @Post()
     @UseInterceptors(FileInterceptor('file'))
-    create(@Body() payment: Payment, @UploadedFile() file: Express.Multer.File): Promise<Payment> {
+    async create(@Body() paymentData: PaymentDTO, @UploadedFile() file: Express.Multer.File): Promise<Payment> {
+        const payment = new Payment();
+        payment.valor = paymentData.valor;
+        payment.descricao = paymentData.descricao;
+        payment.data = new Date();
+        payment.account = await this.accountService.findById(paymentData.accountId);
+    
         return this.paymentService.create(payment, file);
     }
 
@@ -29,6 +42,10 @@ export class PaymentController {
         @Query('startDate') startDate: string,
         @Query('endDate') endDate: string,
     ): Promise<any> {
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        
         return this.paymentService.generateReport(accountId, new Date(startDate), new Date(endDate));
     }
 }
